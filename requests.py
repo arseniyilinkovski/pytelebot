@@ -3,13 +3,13 @@ from db import Positions
 from sqlalchemy import select, update
 
 
-async def set_user(tg_id, first_name, index):
+async def set_user(tg_id, first_name, index, username):
     async with async_session() as session:
         user = await session.scalar(select(Positions).where(Positions.tg_id == tg_id))
         if user:
             return True
         if not user:
-            session.add(Positions(tg_id=tg_id, first_name=first_name, id=index))
+            session.add(Positions(tg_id=tg_id, first_name=first_name, id=index, username=username))
             await session.commit()
 
 

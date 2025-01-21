@@ -36,8 +36,9 @@ async def get_list(callback: CallbackQuery):
     all_categories = await get_positions()
     text = ""
     for position in all_categories:
-        text += f"{str(position.id)}. {str(position.first_name)}\n"
-    await callback.message.answer(text)
+        print(position.id)
+        text += f"{str(position.id)}. <a href='https://t.me/{position.username}'>{str(position.first_name)}</a>\n"
+    await callback.message.answer(text, parse_mode="HTML")
 
 
 @router.message(Command("book"))
@@ -59,10 +60,10 @@ async def book_one_2(message: Message, state: FSMContext):
         await message.answer("Вы не можете занять место меньше 1 или больше 30")
     elif not await requests.check_unique_position(data["position"]):
         await message.answer("Это место уже занято")
-    elif await requests.set_user(message.from_user.id, message.from_user.first_name, data["position"]):
+    elif await requests.set_user(message.from_user.id, message.from_user.first_name, data["position"], message.from_user.username):
         await message.answer("Вы уже есть в очереди")
     else:
-        await requests.set_user(message.from_user.id, message.from_user.first_name, data["position"])
+        await requests.set_user(message.from_user.id, message.from_user.first_name, data["position"], message.from_user.username)
         await message.answer(f"Ваш номер в очереди: {data['position']}")
 
 

@@ -13,9 +13,10 @@ class Base(DeclarativeBase):
 
 class Positions(Base):
     __tablename__ = 'positions'
-    id: Mapped[int] = mapped_column(primary_key=True, unique=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     tg_id = mapped_column(BigInteger)
     first_name: Mapped[str] = mapped_column()
+    username: Mapped[str] = mapped_column(default="NULL")
 
 
 async def async_main():
