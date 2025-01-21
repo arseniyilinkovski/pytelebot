@@ -6,10 +6,19 @@ from sqlalchemy import select, update
 async def set_user(tg_id, first_name, index):
     async with async_session() as session:
         user = await session.scalar(select(Positions).where(Positions.tg_id == tg_id))
-
+        if user:
+            return True
         if not user:
             session.add(Positions(tg_id=tg_id, first_name=first_name, id=index))
             await session.commit()
+
+
+async def check_unique_position(index):
+    all_categories = await get_positions()
+    for position in all_categories:
+        if int(position.id) == int(index):
+            return False
+    return True
 
 
 async def get_positions():

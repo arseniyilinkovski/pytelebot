@@ -57,6 +57,10 @@ async def book_one_2(message: Message, state: FSMContext):
         await message.answer("Вы ввели не число")
     if (int(data["position"]) < 1) or int(data["position"]) > 30:
         await message.answer("Вы не можете занять место меньше 1 или больше 30")
+    elif not await requests.check_unique_position(data["position"]):
+        await message.answer("Это место уже занято")
+    elif await requests.set_user(message.from_user.id, message.from_user.first_name, data["position"]):
+        await message.answer("Вы уже есть в очереди")
     else:
         await requests.set_user(message.from_user.id, message.from_user.first_name, data["position"])
         await message.answer(f"Ваш номер в очереди: {data['position']}")
