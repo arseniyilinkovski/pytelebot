@@ -29,7 +29,7 @@ async def hello(message: Message):
         resize_keyboard=True,
         input_field_placeholder="Выберите действие"
     )
-    await message.answer("Здравствуйте", reply_markup=keyboard)
+    await message.answer("Добрый вечер", reply_markup=keyboard)
 
 
 @router.message(F.text.lower() == "получить список")
