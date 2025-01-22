@@ -1,7 +1,7 @@
 from aiogram import Router, F
 from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, KeyboardButton, ReplyKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton
 from aiogram.fsm.state import StatesGroup, State
 import requests
@@ -18,30 +18,31 @@ class Reg(StatesGroup):
 
 @router.message(Command("start"))
 async def hello(message: Message):
-    builder = InlineKeyboardBuilder()
+    kb = [
+        [
+            KeyboardButton(text="Занять очередь"),
+            KeyboardButton(text="Получить список")
+        ],
+    ]
+    keyboard = ReplyKeyboardMarkup(
+        keyboard=kb,
+        resize_keyboard=True,
+        input_field_placeholder="Выберите действие"
+    )
+    await message.answer("Здравствуйте", reply_markup=keyboard)
 
-    builder.row(InlineKeyboardButton(
-        text="Занять место(команда /book)",
-        callback_data="book_place"
-    ))
-    builder.row(InlineKeyboardButton(
-        text="Получить список",
-        callback_data="get_list"
-    ))
-    await message.answer("Здравствуйте", reply_markup=builder.as_markup())
 
-
-@router.callback_query(F.data == "get_list")
-async def get_list(callback: CallbackQuery):
+@router.message(F.text.lower() == "получить список")
+async def get_list(message: Message):
     all_categories = await get_positions()
     text = ""
     for position in all_categories:
         print(position.id)
         text += f"{str(position.id)}. <a href='https://t.me/{position.username}'>{str(position.first_name)}</a>\n"
-    await callback.message.answer(text, parse_mode="HTML")
+    await message.answer(text, parse_mode="HTML")
 
 
-@router.message(Command("book"))
+@router.message(F.text.lower() == "занять очередь")
 async def book_one(message: Message, state: FSMContext):
     await state.set_state(Reg.position)
     await message.answer("Введите ваш номер в очереди: ")
