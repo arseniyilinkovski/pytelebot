@@ -1,6 +1,6 @@
 from db import async_session
 from db import Positions
-from sqlalchemy import select, update
+from sqlalchemy import select, update, delete
 
 
 async def set_user(tg_id, first_name, index, username):
@@ -24,4 +24,11 @@ async def check_unique_position(index):
 async def get_positions():
     async with async_session() as session:
         return await session.scalars(select(Positions))
+
+
+async def clear_table():
+    async with async_session() as session:
+        await session.delete()
+        await session.commit()
+
 

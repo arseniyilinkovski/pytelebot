@@ -6,6 +6,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton
 from aiogram.fsm.state import StatesGroup, State
 import requests
 from requests import get_positions
+from aiogram.exceptions import TelegramBadRequest
 
 router = Router()
 
@@ -38,8 +39,18 @@ async def get_list(message: Message):
     text = ""
     for position in all_categories:
         print(position.id)
-        text += f"{str(position.id)}. <a href='https://t.me/{position.username}'>{str(position.first_name)}</a>\n"
-    await message.answer(text, parse_mode="HTML")
+        if position.username == "NULL":
+            text += f"{str(position.id)}. {str(position.first_name)}\n"
+        else:
+
+            text += f"{str(position.id)}. <a href='https://t.me/{position.username}'>{str(position.first_name)}</a>\n"
+    try:
+
+        await message.answer(text, parse_mode="HTML")
+
+    except TelegramBadRequest:
+        text = "Очередь пуста"
+        await message.answer(text, parse_mode="HTML")
 
 
 @router.message(F.text.lower() == "занять очередь")
@@ -55,7 +66,7 @@ async def book_one_2(message: Message, state: FSMContext):
 
     try:
         int(data["position"])
-    except:
+    except ValueError:
         await message.answer("Вы ввели не число")
     if (int(data["position"]) < 1) or int(data["position"]) > 30:
         await message.answer("Вы не можете занять место меньше 1 или больше 30")
