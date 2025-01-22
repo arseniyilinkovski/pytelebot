@@ -37,7 +37,7 @@ async def get_list(callback: CallbackQuery):
     text = ""
     for position in all_categories:
         print(position.id)
-        text += f"{str(position.id)} место. <a href='https://t.me/{position.username}'>{str(position.first_name)}</a>\n"
+        text += f"{str(position.id)}. <a href='https://t.me/{position.username}'>{str(position.first_name)}</a>\n"
     await callback.message.answer(text, parse_mode="HTML")
 
 
@@ -55,7 +55,7 @@ async def book_one_2(message: Message, state: FSMContext):
     try:
         int(data["position"])
     except:
-        await message.answer("Вы еблан")
+        await message.answer("Вы ввели не число")
     if (int(data["position"]) < 1) or int(data["position"]) > 30:
         await message.answer("Вы не можете занять место меньше 1 или больше 30")
     elif not await requests.check_unique_position(data["position"]):
